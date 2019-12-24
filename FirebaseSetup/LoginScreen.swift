@@ -1,11 +1,16 @@
 import SwiftUI
+import UIKit
+
+enum LoginToggle {
+    case success, fail
+}
 
 struct LoginScreen: View {
     
     @State var username: String = ""
     @State var password: String = ""
-    @State var success = false
-    @State var fail = false
+    @State var showAlert = false
+    @State var loginToggle: LoginToggle = .success
     
     var body: some View {
         ZStack {
@@ -36,13 +41,22 @@ struct LoginScreen: View {
             
                 Button(action: {
                     if !self.username.isEmpty && !self.password.isEmpty {
-                        self.success.toggle()
+                        self.loginToggle = .success
                     } else {
-                        self.fail.toggle()
+                        self.loginToggle = .fail
                     }
+                    self.showAlert = true
                 }) {
                 Text("Login").foregroundColor(.white).padding().frame(width: 150)
                 
+                }
+                .alert(isPresented: $showAlert) {
+                    switch loginToggle {
+                    case .success:
+                        return Alert(title: Text("Success"), message: Text("Login Successful"))
+                    case .fail:
+                        return Alert(title: Text("Failed"), message: Text("Login failed, please check your username or password."))
+                    }
                 }
                 .background(LinearGradient(gradient: .init(colors: [Color("1"), Color("2")]), startPoint: .leading, endPoint: .trailing))
                 .cornerRadius(20)
@@ -51,15 +65,11 @@ struct LoginScreen: View {
                 
             }
             .padding(.horizontal, 18)
+
             
         }
-        .alert(isPresented: $success) {
-            Alert(title: .init(verbatim: "Success"), message: .init(verbatim: "Login Successful") , dismissButton: .none)
-        }
-        .alert(isPresented: $fail) {
-            Alert(title: .init(verbatim: "Failed"), message: .init(verbatim: "Login Failed") , dismissButton: .none)
-        }
     }
+    
 }
 
 struct LoginScreen_Previews: PreviewProvider {
